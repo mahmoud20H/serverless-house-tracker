@@ -8,16 +8,13 @@ Eliminate spreadsheet friction while house hunting. Track listing URLs, price ti
 ## 📐 Table of Contents
 
 - [Overview](#-overview)
+- [Application Screenshots](#-application-screenshots)
 - [Tech Stack](#-tech-stack)
-- [System Architecture](#-system-architecture)
 - [Repository Structure](#-repository-structure)
 - [Data Models & Schema](#-data-models--schema)
 - [API Documentation](#-api-documentation)
 - [Local Development Setup](#-local-development-setup)
-- [AWS Infrastructure & Terraform](#-aws-infrastructure--terraform)
-- [CI/CD Pipelines (GitHub Actions)](#-cicd-pipelines-github-actions)
-- [Environment Variables & Secrets](#-environment-variables--secrets)
-- [Useful Commands & Troubleshooting](#-useful-commands--troubleshooting)
+
 
 ---
 
@@ -31,6 +28,23 @@ The **Find House** application simplifies house hunting by providing an interact
 - **Rating System**: 1 to 5 star rating (`my_rating`) for personal property evaluation.
 - **Broker Management**: Maintain broker details and track broker reliability ratings (`GOOD`, `AVERAGE`, `BAD`).
 - **Advanced Filtering & Search**: Instant real-time search by title, district, status, rating, or price tier.
+
+---
+
+## 📸 Application Screenshots
+
+### 1. Main Dashboard (Start Page)
+The main interface when opening the frontend application, displaying the property workflow pipeline, category filters, ratings, and property list:
+
+![Main Dashboard - Start Page](./photos/First_page.png)
+
+---
+
+### 2. Add New Property Modal
+The interactive modal opened when clicking the **"Add Property"** button to record property details, set price tier, select broker, list pros & cons, and set rating:
+
+![Add New Property Modal](./photos/Add_new_property.png)
+
 
 ---
 
@@ -50,6 +64,7 @@ The **Find House** application simplifies house hunting by providing an interact
 ```
 .
 ├── backend/
+│   ├── Dockerfile                 # Docker container setup for Express API
 │   ├── db.js                      # AWS SDK v3 DynamoDB Document Client initialization
 │   ├── server.js                  # Express API routes, validation & business logic
 │   └── package.json               # Backend dependencies
@@ -59,9 +74,16 @@ The **Find House** application simplifies house hunting by providing an interact
 │   │   ├── App.jsx                # Main application component & interactive state
 │   │   ├── App.css                # Custom styling utilities
 │   │   └── main.jsx               # React entry point
+│   ├── Dockerfile                 # Docker container setup for React Vite app
 │   ├── vite.config.js             # Vite development server settings
 │   ├── tailwind.config.js         # Tailwind styling setup
 │   └── package.json               # Frontend dependencies
+│
+├── photos/
+│   ├── First_page.png             # Application main page screenshot
+│   └── Add_new_property.png       # Add new property modal screenshot
+│
+├── docker-compose.yml             # Local multi-container development environment
 │
 └── README.md                      # Project documentation
 ```
@@ -133,5 +155,35 @@ The **Find House** application simplifies house hunting by providing an interact
 
 - **`POST /api/brokers`**
   - **Description**: Registers or updates a broker record.
+
+---
+
+## 💻 Local Development Setup
+
+You can run the entire environment locally using **Docker Compose** without configuring AWS.
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+- Node.js v20+ (optional, if running without Docker).
+
+### Step-by-Step Execution
+
+1. **Clone the repository**:
+   ```bash
+   git clone [serverless-house-tracker](https://github.com/mahmoud20H/serverless-house-tracker.git)
+   cd "serverless-house-tracker"
+   ```
+
+2. **Launch with Docker Compose**:
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access Services**:
+   - **Frontend App**: `http://localhost:5173`
+   - **Backend API**: `http://localhost:3000`
+   - **DynamoDB Local**: `http://localhost:8000`
+
+> 💡 *Note*: The `dynamodb-init` container automatically runs upon startup to initialize the `Houses` and `Brokers` tables in DynamoDB Local.
 
 ---
