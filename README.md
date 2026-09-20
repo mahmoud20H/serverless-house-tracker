@@ -14,6 +14,7 @@ Eliminate spreadsheet friction while house hunting. Track listing URLs, price ti
 - [Data Models & Schema](#-data-models--schema)
 - [API Documentation](#-api-documentation)
 - [Local Development Setup](#-local-development-setup)
+- [CI/CD Pipelines (GitHub Actions)](#-cicd-pipelines-github-actions)
 
 
 ---
@@ -45,6 +46,18 @@ The interactive modal opened when clicking the **"Add Property"** button to reco
 
 ![Add New Property Modal](./photos/Add_new_property.png)
 
+---
+
+### 3. Reading Security SARIF Reports in VS Code
+The security scanning workflows (KICS & Semgrep SAST) export standardized `.sarif` report files. Using the official **SARIF Viewer** extension in VS Code, you can open and inspect security findings, line-by-line code locations, vulnerability severity levels, and remediation steps directly inside your editor:
+
+![SARIF Viewer in VS Code](./photos/SARIF.png)
+
+#### 💡 How to View SARIF Reports Locally:
+1. Install the **SARIF Viewer** extension in VS Code (`ms-sarifvscode.sarif-viewer`).
+2. Download the artifact (`results.sarif` or `semgrep.sarif`) from your GitHub Actions run.
+3. Open the `.sarif` file in VS Code (`File > Open File`). The SARIF Explorer panel will automatically render, highlighting all findings directly on your source code lines!
+
 
 ---
 
@@ -56,6 +69,7 @@ The interactive modal opened when clicking the **"Add Property"** button to reco
 | **Backend API** | Node.js (v20), Express.js, `@aws-sdk/client-dynamodb`, `@aws-sdk/lib-dynamodb` |
 | **Database** | AWS DynamoDB (On-Demand PAY_PER_REQUEST pricing) |
 | **Local Containerization**| Docker & Docker Compose |
+| **CI/CD** | GitHub Actions with workflows |
 
 ---
 
@@ -63,6 +77,11 @@ The interactive modal opened when clicking the **"Add Property"** button to reco
 
 ```
 .
+├── .github/
+│   └── workflows/
+│       ├── security-scan.yml          # Automated security scanning (Trivy & KICS)
+│       └── semgrep-security-scan.yml  # Static application security testing (Semgrep SAST)
+|
 ├── backend/
 │   ├── Dockerfile                 # Docker container setup for Express API
 │   ├── db.js                      # AWS SDK v3 DynamoDB Document Client initialization
@@ -81,7 +100,8 @@ The interactive modal opened when clicking the **"Add Property"** button to reco
 │
 ├── photos/
 │   ├── First_page.png             # Application main page screenshot
-│   └── Add_new_property.png       # Add new property modal screenshot
+│   ├── Add_new_property.png       # Add new property modal screenshot
+│   └── SARIF.png                      # SARIF Viewer VS Code extension screenshot
 │
 ├── docker-compose.yml             # Local multi-container development environment
 │
@@ -185,5 +205,22 @@ You can run the entire environment locally using **Docker Compose** without conf
    - **DynamoDB Local**: `http://localhost:8000`
 
 > 💡 *Note*: The `dynamodb-init` container automatically runs upon startup to initialize the `Houses` and `Brokers` tables in DynamoDB Local.
+
+---
+
+
+## 🚀 CI/CD Pipelines (GitHub Actions)
+
+The repository contains automated GitHub Actions workflows located under `.github/workflows/`:
+
+| Pipeline | Trigger | Description |
+| :--- | :--- | :--- |
+| **`security-scan.yml`** | `workflow_dispatch` (Manual) | Parallel security analysis using **Trivy** (app/dependencies) and **KICS** (Terraform/Dockerfiles SARIF output). |
+| **`semgrep-security-scan.yml`** | `workflow_dispatch` (Manual) | Static Application Security Testing (**Semgrep SAST**) for code & configuration analysis, generating `semgrep.sarif`. |
+
+### Automated Security Scanning Highlights
+- **Trivy Job**: Scans filesystem dependencies across `./backend` and `./frontend` for High & Critical vulnerabilities. Fails the build if critical issues are detected.
+- **KICS Job**: Analyzes Docker files (`backend/Dockerfile`, `frontend/Dockerfile`) for security misconfigurations, exporting results as a SARIF artifact.
+- **Semgrep SAST Job**: Performs static security code analysis to catch code vulnerabilities (such as prototype pollution, object injection, or insecure settings), exporting results as a SARIF artifact.
 
 ---
