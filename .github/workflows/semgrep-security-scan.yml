@@ -1,0 +1,27 @@
+name: Semgrep SAST
+
+on:
+  workflow_dispatch:
+
+jobs:
+  semgrep-sast:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Semgrep SAST scan
+        run: |
+          pip install semgrep
+          semgrep --config p/default --sarif --output semgrep.sarif . || true
+
+      - name: Upload Semgrep SARIF as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results-${{ github.repository_owner }}-${{ github.event.repository.name }}
+          path: semgrep.sarif
