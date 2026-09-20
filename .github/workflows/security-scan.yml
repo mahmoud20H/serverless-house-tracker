@@ -1,0 +1,48 @@
+name: Semgrep SAST
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trivy-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 
+
+      - name: Run Trivy Vulnerability Scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '1'
+
+  kics-scan:
+    name: Infrastructure Scan (KICS)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+
+      - name: Create Results Directory
+        run: mkdir -p results
+
+      - name: Run KICS Docker Scan
+        uses: Checkmarx/kics-github-action@v2.1.0
+        with:
+          path: './backend/Dockerfile,./frontend/Dockerfile'
+          output_path: './results'
+          output_formats: 'sarif'
+        continue-on-error: true
+
+      - name: Upload SARIF file to GitHub Code Scanning
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: './results/results.sarif'
