@@ -34,7 +34,7 @@ jobs:
         run: mkdir -p results
 
       - name: Run KICS Docker Scan
-        uses: Checkmarx/kics-github-action@v2.1.0
+        uses: Checkmarx/kics-github-action@master
         with:
           path: './backend/Dockerfile,./frontend/Dockerfile'
           output_path: './results'
