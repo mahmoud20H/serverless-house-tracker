@@ -11,10 +11,6 @@ jobs:
       security-events: write 
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-    steps:
       # Pinned to 40-character commit SHA to prevent supply chain attacks via mutable tags
       - name: Checkout
         uses: actions/checkout@6929cce13e9b8f1118429ba5a2f08743ced41ad0 # v4.1.7
