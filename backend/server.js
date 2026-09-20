@@ -107,11 +107,15 @@ app.put('/api/houses/:id', async (req, res) => {
         const updatableKeys = ['title', 'link', 'status', 'price_tier', 'district', 'broker_id', 'pros', 'cons', 'notes', 'my_rating'];
 
         updatableKeys.forEach(key => {
-            if (data[key] !== undefined) {
-                // #key is used to avoid reserved keyword conflicts in DynamoDB
-                updateFields.push(`#${key} = :${key}`);
-                expressionAttributeNames[`#${key}`] = key;
-                expressionAttributeValues[`:${key}`] = data[key];
+            // Secure lookup: Ensure key is an own property of data to prevent prototype pollution and object injection
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                const value = data[key];
+                if (value !== undefined) {
+                    // #key is used to avoid reserved keyword conflicts in DynamoDB
+                    updateFields.push(`#${key} = :${key}`);
+                    expressionAttributeNames[`#${key}`] = key;
+                    expressionAttributeValues[`:${key}`] = value;
+                }
             }
         });
 
