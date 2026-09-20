@@ -41,8 +41,9 @@ jobs:
           output_formats: 'sarif'
         continue-on-error: true
 
-      - name: Upload SARIF file to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v3
+      - name: Upload KICS  as artifact
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          sarif_file: './results/results.sarif'
+          name: kics-results-${{ github.repository_owner }}-${{ github.event.repository.name }}
+          path: ./results/results.sarif
