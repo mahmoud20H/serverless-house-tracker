@@ -1,4 +1,4 @@
-name: Semgrep SAST
+name: security-scan
 
 on:
   workflow_dispatch:
