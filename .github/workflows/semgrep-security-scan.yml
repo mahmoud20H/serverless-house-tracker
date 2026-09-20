@@ -23,7 +23,7 @@ jobs:
       # Pinned to 40-character commit SHA to prevent supply chain attacks via mutable tags
       - name: Upload Semgrep SARIF as artifact
         if: always()
-        uses: actions/upload-artifact@d23441a48e516b6c34aea4fa41551a30e30af803 # v4.4.1
+        uses: actions/upload-artifact@604373da6381bf24206979c74d06a550515601b9 # refs/tags/v4.4.1
         with:
           name: semgrep-results-${{ github.repository_owner }}-${{ github.event.repository.name }}
           path: semgrep.sarif
